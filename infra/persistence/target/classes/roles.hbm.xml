@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.apm.core">
+
+   <class name="Roles" table="Roles">
+      <id name="roleID" column="Role_ID" type="long">
+         <generator class="identity"/>
+      </id>
+      <property name="role" column="Roles" type="string"/>
+      <set name="employees" table="Employee_Role" lazy="false" fetch="select" inverse="true">
+         <key column="Role_ID"/>
+         <many-to-many column="Employee_ID" class="Employee"/>
+      </set>
+  </class>
+
+</hibernate-mapping>
