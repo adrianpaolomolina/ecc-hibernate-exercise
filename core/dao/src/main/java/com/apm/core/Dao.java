@@ -3,7 +3,9 @@ package com.apm.core;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.Hibernate;
 import java.util.List;
+import com.apm.core.Employee;
 
 public class Dao
 {
@@ -38,6 +40,27 @@ public class Dao
 		return t;
 	}
 
+  public Employee getSpecificWithContacts ( final long id, final Class<Employee> type ) {
+		Session session = startSession();
+		Employee employee = ( Employee ) session.get ( type, id );
+    Hibernate.initialize(employee.getContacts());
+    session.close();
+		return employee;
+	}
+
+  public Employee getSpecificWithRoles ( final long id, final Class<Employee> type ) {
+		Session session = startSession();
+		Employee employee = ( Employee ) session.get ( type, id );
+    Hibernate.initialize(employee.getRoles());
+    session.close();
+		return employee;
+	}
+
+  public void closeSession() {
+    Session session = DaoConfiguration.getSessionFactory().getCurrentSession();
+    session.close();
+  }
+
   public <T> T get ( T t ) {
 		Session session = startSession();
 		List<T> list = session.createCriteria ( t.getClass() ).list();
@@ -59,5 +82,12 @@ public class Dao
 	   	session.getTransaction().commit();
 	   	session.close();
 	}
+
+  public <T> List<T> getByQuery ( String query, final Class<T> type ) {
+	  	Session session = startSession();
+	   	List<T> list = session.createQuery(query).list();
+	   	session.close();
+	   	return list;
+  	}
 
 }

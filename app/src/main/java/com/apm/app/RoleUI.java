@@ -5,13 +5,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.apm.core.Roles;
-import com.apm.core.EmployeeController;
 import com.apm.utility.InputUtility;
 import com.apm.core.Employee;
+import com.apm.core.RoleController;
+import com.apm.core.EmployeeController;
 
 import org.hibernate.exception.ConstraintViolationException;
 
 public class RoleUI {
+
+  public static RoleController roleController = new RoleController();
+  public static EmployeeController employeeController = new EmployeeController();
 
   public static String message = "";
 
@@ -61,11 +65,11 @@ public class RoleUI {
   public static String updateRole() throws Exception {
     try {
       System.out.println ( retrieveAllRoles() );
-      Roles role = EmployeeController.retrieveRole ( InputUtility.inputPositiveNumber ( "\n Input ID of Role to Update: ", false ) );
-      message = EmployeeController.editRole ( role, InputUtility.inputString ( "\n Input New Role Name: ", false ) ) ;
+      Roles role = roleController.retrieveRole ( InputUtility.inputPositiveNumber ( "\n Input ID of Role to Update: ", false ) );
+      message = roleController.editRole ( role, InputUtility.inputString ( "\n Input New Role Name: ", false ) ) ;
       System.out.println ( message );
     } catch ( Exception e ) {
-      message = EmployeeController.message;
+      message = roleController.message;
       throw e;
     }
     return message;
@@ -74,10 +78,11 @@ public class RoleUI {
   public static String addNewRole () throws Exception {
     System.out.println ( retrieveAllRoles() );
     try {
-      EmployeeController.addRole ( InputUtility.inputString ( "\n Input New Role To Add: ", false ));
+      roleController.addRole ( InputUtility.inputString ( "\n Input New Role To Add: ", false ) );
       return "Successfully Added New Role!";
     } catch ( Exception e ) {
-      System.out.println ( EmployeeController.message );
+      System.out.println ( roleController.message );
+      e.printStackTrace();
       throw e;
     }
   }
@@ -88,19 +93,19 @@ public class RoleUI {
       System.out.println ( retrieveAllRoles() );
       int id = InputUtility.inputPositiveNumber ( "Input ID of Role To Delete: ", false);
       try {
-          return EmployeeController.deleteRole ( id );
+          return roleController.deleteRole ( id );
       } catch ( ConstraintViolationException e ) {
         System.out.println ( "Role is still assigned to at least one employee!" );
         throw e;
       } catch ( Exception e ) {
-        System.out.println ( EmployeeController.message );
+        System.out.println ( roleController.message );
         throw e;
       }
   }
 
   public Set<Roles> getAllRoles() {
     Set<Roles> roles = new HashSet<>();
-    List<Roles> availableRoles = EmployeeController.retrieveElements ( Roles.class );
+    List<Roles> availableRoles = employeeController.retrieveElements ( Roles.class );
 		while ( true )	{
 			System.out.println( " \n\n ======== List of Roles ======== " );
 			availableRoles = availableRoles.stream()
@@ -113,7 +118,7 @@ public class RoleUI {
 			availableRoles.forEach ( System.out::println );
 			int roleID = InputUtility.inputPositiveNumber( " Input Role To Add (Enter role number): ", false );
 			try {
-				roles.add ( EmployeeController.retrieveRole ( roleID ) );
+				roles.add ( roleController.retrieveRole ( roleID ) );
 			} catch ( Exception exception ) {
 				System.out.println ( "Role not found! " );
 				continue;
@@ -136,7 +141,7 @@ public class RoleUI {
   public static String retrieveAllRoles() throws Exception {
     System.out.print("\033\143\n");
     StringBuilder stringBuilder = new StringBuilder();
-    List<Roles> roles = EmployeeController.retrieveElements(Roles.class);
+    List<Roles> roles = employeeController.retrieveElements(Roles.class);
     roles.stream()
       .sorted ( ( role1, role2 ) -> Long.compare ( role1.getRoleID(), role2.getRoleID() ) )
       .forEach ( role -> stringBuilder.append ( role + "\n" ) );
@@ -145,7 +150,7 @@ public class RoleUI {
 
   public String getEmployeeRolesToAdd ( Employee employee ) {
 		StringBuilder stringBuilder = new StringBuilder();
-		EmployeeController.retrieveElements ( Roles.class ) .stream()
+		employeeController.retrieveElements ( Roles.class ) .stream()
 											 .filter ( role -> !employee.getRoles().contains ( role ) )
 											 .sorted ( ( role1, role2 ) -> Long.compare ( role1.getRoleID(), role2.getRoleID() ) )
 											 .forEach ( role -> stringBuilder.append ( role + "\n" ) );
@@ -154,7 +159,7 @@ public class RoleUI {
 
   public String getEmployeeRolesToDelete ( Employee employee ) {
 		StringBuilder stringBuilder = new StringBuilder();
-		EmployeeController.retrieveElements ( Roles.class ) .stream()
+		employeeController.retrieveElements ( Roles.class ) .stream()
 											 .filter ( role -> employee.getRoles().contains ( role ) )
 											 .sorted ( ( role1,role2 ) -> Long.compare ( role1.getRoleID(), role2.getRoleID() ) )
 											 .forEach ( role -> stringBuilder.append ( role + "\n" ) );

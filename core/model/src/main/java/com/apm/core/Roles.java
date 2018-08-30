@@ -7,7 +7,6 @@ public class Roles {
 
   private Long roleID;
   private String role;
-  private Set<Employee> employees = new HashSet<>();
 
   public Roles() {
   }
@@ -30,14 +29,6 @@ public class Roles {
 
   public void setRole ( String role ) {
     this.role = role;
-  }
-
-  public Set<Employee> getEmployees() {
-    return this.employees;
-  }
-
-  public void setEmployees ( Set<Employee> employees ) {
-    this.employees = employees;
   }
 
   @Override

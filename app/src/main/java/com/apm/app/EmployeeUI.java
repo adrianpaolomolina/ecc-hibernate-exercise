@@ -12,6 +12,7 @@ import com.apm.core.EmployeeController;
 
 public class EmployeeUI {
 
+  public static EmployeeController employeeController = new EmployeeController();
   public static String message = "";
 
   public static void printEmployeeMenu() {
@@ -33,7 +34,7 @@ public class EmployeeUI {
             System.out.println ( addNewEmployee() );
             break;
           case "2":
-            System.out.println ( retrieveEmployees() );
+            displayEmployeeMenu();
             break;
           case "3":
             getEmployeeToEdit();
@@ -53,6 +54,67 @@ public class EmployeeUI {
     } while ( true );
   }
 
+  public static void printDisplayEmployeeMenu() {
+    System.out.println ( " \n\n======== Display Employee Menu ========\n\n "
+                        + " 1. Sorted by ID \n "
+                        + " 2. Sorted by GWA \n "
+                        + " 3. Sorted by Last Name \n "
+                        + " 4. Sorted by Hire Date \n "
+                        + " 5. Go Back To Employee Menu \n ");
+  }
+
+  public static void displayEmployeeMenu() {
+    do {
+      printDisplayEmployeeMenu();
+      List<Employee> employee = employeeController.retrieveElements ( Employee.class );
+      String selection = InputUtility.inputChoice ( "Select Operation: " );
+      switch ( selection ) {
+        case "1":
+        System.out.println ( retrieveEmployees() );
+        break;
+        case "2":
+        printEmployeeDetailsBySort ( employeeController.sortByGwa ( employee ), "GWA" );
+        break;
+        case "3":
+        printEmployeeDetailsBySort ( employeeController.sortByLastName ( employee ), "LASTNAME" );
+        break;
+        case "4":
+        printEmployeeDetailsBySort ( employeeController.sortByHireDate ( employee ), "HIREDATE" );
+        break;
+        case "5":
+        break;
+        default:
+      }
+      if ( selection.equals ( "5" ) ) {
+        break;
+      }
+    } while ( true );
+  }
+
+  public static void printEmployeeDetailsBySort ( List<Employee> employees, String type ) {
+    if ( type.equals ( "GWA" ) ) {
+      employees.stream()
+              .forEach ( employee -> {
+                System.out.println ( "Employee ID: " + employee.getEmployeeId()
+                                  + "   GWA: " + employee.getGwa()
+                                  + "   Employee Name: " + employee.getEmployeeName() );
+              });
+    } else if ( type.equals ( "LASTNAME" ) ) {
+      employees.stream()
+              .forEach ( employee -> {
+                System.out.println ( "Employee ID: " + employee.getEmployeeId()
+                                  + "   Employee Name: " + employee.getEmployeeName() );
+              });
+    } else if ( type.equals ( "HIREDATE" ) ) {
+      employees.stream()
+              .forEach ( employee -> {
+                System.out.println ( "Employee ID: " + employee.getEmployeeId()
+                                + " Hire Date: " + employee.getHireDate()
+                                + " Employee Name: " + employee.getEmployeeName() );
+              });
+    }
+  }
+
   public static String addNewEmployee() throws Exception {
     System.out.print("\033\143\n");
     System.out.println( "\n ======== Add Employee ========\n\n " );
@@ -61,10 +123,10 @@ public class EmployeeUI {
     String middleName = InputUtility.inputString ( "Input Middle Name: ", false);
     String suffix = InputUtility.inputString ( "Input Suffix: ", true );
     String title = InputUtility.inputString ( "Input Title: ", true );
-    Date birthDate = InputUtility.inputDate ( "Input Birth Date: " );
-    Date hireDate = InputUtility.inputDate ( "Input Hire Date: " );
+    Date birthDate = InputUtility.inputDate ( "Input Birth Date ( YYYY-MM-DD ): " );
+    Date hireDate = InputUtility.inputDate ( "Input Hire Date ( YYYY-MM-DD ): " );
     float gwa = InputUtility.inputFloat ( "Input your GWA (Float) : ", false);
-    boolean isCurrentlyHired = InputUtility.inputBoolean ( "Are You Currently Hired?: ");
+    boolean isCurrentlyHired = InputUtility.inputBoolean ( "Are You Currently Hired? ( Y or N ): ");
     System.out.println ( "\n ======== ADDRESS ========\n\n ");
     int streetNumber = InputUtility.inputPositiveNumber ( "Input Street Number: ", false );
     String streetName = InputUtility.inputString ( "Input Street Name: ", false );
@@ -73,8 +135,8 @@ public class EmployeeUI {
     String zipCode = InputUtility.inputString ( "Input Zip Code: ", false );
     Set<Contact> contacts = ContactUI.getInstance().getAllContacts ( true );
     Set<Roles> roles = RoleUI.getInstance().getAllRoles();
-    EmployeeController.addEmployee ( lastName, firstName, middleName, suffix, title, birthDate, hireDate,
-                      gwa, isCurrentlyHired, EmployeeController.createNewAddress ( streetNumber, streetName,
+    employeeController.addEmployee ( employeeController.createEmployeeName ( lastName, firstName, middleName, suffix, title ), birthDate, hireDate,
+                      gwa, isCurrentlyHired, employeeController.createNewAddress ( streetNumber, streetName,
                       barangay, city, zipCode ), contacts, roles );
     return "Employee Successfully Added! ";
     }
@@ -86,9 +148,9 @@ public class EmployeeUI {
     System.out.println ( retrieveEmployees() );
     int id = InputUtility.inputPositiveNumber ( "Input ID of User To Delete: ", false);
     try {
-      return EmployeeController.deleteEmployee ( id );
+      return employeeController.deleteEmployee ( id );
     } catch ( Exception e ) {
-      System.out.println ( EmployeeController.message );
+      System.out.println ( employeeController.message );
       throw e;
     }
   }
@@ -96,7 +158,7 @@ public class EmployeeUI {
   public static String retrieveEmployees(){
     System.out.print("\033\143\n");
   	StringBuilder stringBuilder = new StringBuilder();
-  	List<Employee> employees = EmployeeController.retrieveElements(Employee.class);
+  	List<Employee> employees = employeeController.retrieveElements(Employee.class);
   	employees.stream()
          .sorted ( ( employee1, employee2 ) -> Long.compare ( employee1.getEmployeeId(), employee2.getEmployeeId() ) )
   			 .forEach ( employee -> stringBuilder.append ( employee + "\n" ) );
@@ -128,7 +190,7 @@ public class EmployeeUI {
         if ( option.equals("4") ) {
           break;
         } else if ( option.equals("2") || option.equals("3") ) {
-          System.out.println ( EmployeeController.updateElement ( employee ) );
+          System.out.println ( employeeController.updateElement ( employee ) );
         }
       } catch ( Exception e ) {
         e.printStackTrace();
@@ -151,7 +213,7 @@ public class EmployeeUI {
       System.out.println ( retrieveEmployees() );
       int employeeId = InputUtility.inputPositiveNumber ( "Select Employee To Edit: ", false );
       try {
-        employee = EmployeeController.getEmployee ( employeeId );
+        employee = employeeController.getEmployeeWithRoles ( employeeId );
         if ( !employee.equals(null) ) {
           editEmployee( employee );
         }
@@ -192,18 +254,18 @@ public class EmployeeUI {
       if ( option.equals("6") ) {
         break;
       } else {
-        System.out.println( "\n" + EmployeeController.updateElement(employee));
+        System.out.println( "\n" + employeeController.updateElement(employee));
       }
     } while ( true );
   }
 
   public static Employee editEmployeeName ( Employee employee ) {
     System.out.println (" \n ======== Edit Employee Name ======== \n\n ");
-  	employee.setLastName ( InputUtility.inputString("Input Last Name : ", false) );
-  	employee.setFirstName ( InputUtility.inputString("Input First Name : ", false) );
-  	employee.setMiddleName ( InputUtility.inputString("Input Middle Name : ", false) );
-  	employee.setSuffix ( InputUtility.inputString("Input Suffix : ", true) );
-  	employee.setTitle ( InputUtility.inputString("Input Title : ", true) );
+  	employee.getEmployeeName().setLastName ( InputUtility.inputString("Input Last Name : ", false) );
+  	employee.getEmployeeName().setFirstName ( InputUtility.inputString("Input First Name : ", false) );
+  	employee.getEmployeeName().setMiddleName ( InputUtility.inputString("Input Middle Name : ", false) );
+  	employee.getEmployeeName().setSuffix ( InputUtility.inputString("Input Suffix : ", true) );
+  	employee.getEmployeeName().setTitle ( InputUtility.inputString("Input Title : ", true) );
     return employee;
   }
 
@@ -256,7 +318,7 @@ public class EmployeeUI {
     System.out.println ( RoleUI.getInstance().getEmployeeRolesToAdd ( employee ) );
     int id = InputUtility.inputPositiveNumber ( " Input Role ID: ", false );
     try {
-      EmployeeController.getNewEmployeeRoles ( employee, id );
+      employeeController.getNewEmployeeRoles ( employee, id );
     } catch ( NullPointerException e ) {
       System.out.println ( "\n That Role is not available! " );
       throw e;
@@ -269,7 +331,7 @@ public class EmployeeUI {
     System.out.println ( RoleUI.getInstance().getEmployeeRolesToDelete ( employee ) );
     int id = InputUtility.inputPositiveNumber ( " Input Role ID: ", false );
     try {
-      EmployeeController.removeEmployeeRole ( employee, id );
+      employeeController.removeEmployeeRole ( employee, id );
     } catch ( NullPointerException e ) {
       System.out.println ( "\n Employee does not have that role! " );
       throw e;

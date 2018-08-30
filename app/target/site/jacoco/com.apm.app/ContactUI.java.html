@@ -3,154 +3,155 @@
 import java.util.Set;
 import java.util.HashSet;
 import com.apm.core.Employee;
-import com.apm.core.EmployeeController;
 import com.apm.core.Contact;
+import com.apm.core.EmployeeController;
 import com.apm.utility.InputUtility;
+import org.hibernate.Hibernate;
 
-<span class="nc" id="L10">public class ContactUI {</span>
+<span class="nc" id="L11">public class ContactUI {</span>
+
+<span class="nc" id="L13">  public static EmployeeController employeeController = new EmployeeController();</span>
 
   public static void printContactUI() {
-<span class="nc" id="L13">    System.out.println ( &quot;\n ======== CONTACT MENU ========\n\n &quot;</span>
+<span class="nc" id="L16">    System.out.println ( &quot;\n ======== CONTACT MENU ========\n\n &quot;</span>
                        + &quot; 1. Create Contact \n &quot;
                        + &quot; 2. Update Contact \n &quot;
                        + &quot; 3. Remove Contact \n &quot;
                        + &quot; 4. Go Back To Main Menu \n &quot; );
-<span class="nc" id="L18">  }</span>
+<span class="nc" id="L21">  }</span>
 
   public void runContactUI() {
     do {
-<span class="nc" id="L22">      printContactUI();</span>
-<span class="nc" id="L23">      String selection = InputUtility.inputChoice( &quot;Select Operation: &quot; );</span>
+<span class="nc" id="L25">      printContactUI();</span>
+<span class="nc" id="L26">      String selection = InputUtility.inputChoice ( &quot;Select Operation: &quot; );</span>
       try {
-<span class="nc bnc" id="L25" title="All 5 branches missed.">        switch( selection ) {</span>
+<span class="nc bnc" id="L28" title="All 5 branches missed.">        switch ( selection ) {</span>
           case &quot;1&quot;:
-<span class="nc" id="L27">            System.out.println ( EmployeeController.updateElement ( addNewContacts () ) );</span>
-<span class="nc" id="L28">            break;</span>
-          case &quot;2&quot;:
-<span class="nc" id="L30">            updateEmployeeContact();</span>
+<span class="nc" id="L30">            System.out.println ( employeeController.updateElement ( addNewContacts () ) );</span>
 <span class="nc" id="L31">            break;</span>
-          case &quot;3&quot;:
-<span class="nc" id="L33">            deleteEmployeeContact();</span>
+          case &quot;2&quot;:
+<span class="nc" id="L33">            updateEmployeeContact();</span>
 <span class="nc" id="L34">            break;</span>
+          case &quot;3&quot;:
+<span class="nc" id="L36">            deleteEmployeeContact();</span>
+<span class="nc" id="L37">            break;</span>
           case &quot;4&quot;:
-<span class="nc" id="L36">            break;</span>
+<span class="nc" id="L39">            break;</span>
           default:
-<span class="nc" id="L38">            System.out.println ( &quot;Selection not valid! Input again! &quot;);</span>
+<span class="nc" id="L41">            System.out.println ( &quot;Selection not valid! Input again! &quot; );</span>
             break;
         }
-<span class="nc bnc" id="L41" title="All 2 branches missed.">        if ( selection.equals(&quot;4&quot;) ) {</span>
-<span class="nc" id="L42">          break;</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if ( selection.equals ( &quot;4&quot; ) ) {</span>
+<span class="nc" id="L45">          break;</span>
         }
-<span class="nc" id="L44">      } catch ( Exception e ) {</span>
-
-<span class="nc" id="L46">      }</span>
-<span class="nc" id="L47">    }  while ( true );</span>
-<span class="nc" id="L48">  }</span>
+<span class="nc" id="L47">      } catch ( Exception e ) {</span>
+<span class="nc" id="L48">      }</span>
+<span class="nc" id="L49">    }  while ( true );</span>
+<span class="nc" id="L50">  }</span>
 
   public static void updateEmployeeContact() throws Exception {
-<span class="nc" id="L51">    Employee employee = null;</span>
-<span class="nc" id="L52">    Contact contact = null;</span>
-<span class="nc" id="L53">    String newContact = &quot;&quot;;</span>
-<span class="nc" id="L54">    System.out.println ( EmployeeUI.retrieveEmployees() );</span>
-<span class="nc" id="L55">    int employeeId = InputUtility.inputPositiveNumber ( &quot;\nInput ID of Employee to Update: &quot;, false );</span>
+<span class="nc" id="L53">    Employee employee = null;</span>
+<span class="nc" id="L54">    Contact contact = null;</span>
+<span class="nc" id="L55">    String newContact = &quot;&quot;;</span>
+<span class="nc" id="L56">    System.out.println ( EmployeeUI.retrieveEmployees() );</span>
+<span class="nc" id="L57">    int employeeId = InputUtility.inputPositiveNumber ( &quot;\nInput ID of Employee to Update: &quot;, false );</span>
     try {
-<span class="nc" id="L57">      employee = EmployeeController.getEmployee ( employeeId );</span>
-<span class="nc" id="L58">      employee.getContacts().stream()</span>
-<span class="nc" id="L59">              .sorted ( ( contact1, contact2 ) -&gt; Long.compare ( contact1.getContactId(), contact2.getContactId() ) )</span>
-<span class="nc" id="L60">              .forEach ( System.out::println );</span>
-<span class="nc" id="L61">      contact = EmployeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( &quot;\nInput ID of Contact you want to update: &quot;, false ) );</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">      if ( contact.getContactType().equals ( &quot;Landline&quot; ) ) {</span>
-<span class="nc" id="L63">        newContact = InputUtility.inputLandline ( &quot;\nEnter New Landline Number ( XXX-XXXX ): &quot; );</span>
-<span class="nc bnc" id="L64" title="All 2 branches missed.">      } else if ( contact.getContactType().equals ( &quot;Mobile&quot; ) ) {</span>
-<span class="nc" id="L65">        newContact = InputUtility.inputMobile ( &quot;\nEnter New Mobile Number ( XXXX - XXX - XXXX ): &quot; );</span>
-<span class="nc bnc" id="L66" title="All 2 branches missed.">      } else if ( contact.getContactType().equals ( &quot;Email&quot; ) ) {</span>
-<span class="nc" id="L67">        newContact = InputUtility.inputEmail ( &quot;\nEnter New Email: &quot; );</span>
+<span class="nc" id="L59">      employee = employeeController.getEmployeeWithContacts ( employeeId );</span>
+<span class="nc" id="L60">      employee.getContacts().stream()</span>
+<span class="nc" id="L61">              .sorted ( ( contact1, contact2 ) -&gt; Long.compare ( contact1.getContactId(), contact2.getContactId() ) )</span>
+<span class="nc" id="L62">              .forEach ( System.out::println );</span>
+<span class="nc" id="L63">      contact = employeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( &quot;\nInput ID of Contact you want to update: &quot;, false ) );</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">      if ( contact.getContactType().equals ( &quot;Landline&quot; ) ) {</span>
+<span class="nc" id="L65">        newContact = InputUtility.inputLandline ( &quot;\nEnter New Landline Number ( XXX-XXXX ): &quot; );</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      } else if ( contact.getContactType().equals ( &quot;Mobile&quot; ) ) {</span>
+<span class="nc" id="L67">        newContact = InputUtility.inputMobile ( &quot;\nEnter New Mobile Number ( XXXX - XXX - XXXX ): &quot; );</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">      } else if ( contact.getContactType().equals ( &quot;Email&quot; ) ) {</span>
+<span class="nc" id="L69">        newContact = InputUtility.inputEmail ( &quot;\nEnter New Email: &quot; );</span>
       }
-<span class="nc" id="L69">      System.out.println ( EmployeeController.updateContact ( employee, contact, newContact ) );</span>
-<span class="nc" id="L70">    } catch ( Exception e ) {</span>
-<span class="nc bnc" id="L71" title="All 4 branches missed.">      if ( employee == null &amp;&amp; contact == null ) {</span>
-<span class="nc" id="L72">        System.out.println ( &quot;Employee does not exist!&quot; );</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">      } else if ( contact == null ) {</span>
-<span class="nc" id="L74">        System.out.println ( EmployeeController.message );</span>
+<span class="nc" id="L71">      System.out.println ( employeeController.updateContact ( employee, contact, newContact ) );</span>
+<span class="nc" id="L72">    } catch ( Exception e ) {</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">      if ( employee == null &amp;&amp; contact == null ) {</span>
+<span class="nc" id="L74">        System.out.println ( &quot;Employee does not exist!&quot; );</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">      } else if ( contact == null ) {</span>
+<span class="nc" id="L76">        System.out.println ( employeeController.message );</span>
       } else {
-<span class="nc" id="L76">        System.out.println ( EmployeeController.message );</span>
+<span class="nc" id="L78">        System.out.println ( employeeController.message );</span>
       }
-<span class="nc" id="L78">    }</span>
-<span class="nc" id="L79">  }</span>
+<span class="nc" id="L80">    }</span>
+<span class="nc" id="L81">  }</span>
 
   public static void deleteEmployeeContact() throws Exception {
-<span class="nc" id="L82">    Employee employee = null;</span>
-<span class="nc" id="L83">    Contact contact = null;</span>
-<span class="nc" id="L84">    System.out.println ( EmployeeUI.retrieveEmployees() );</span>
-<span class="nc" id="L85">    int employeeId = InputUtility.inputPositiveNumber( &quot;\n Input ID of Employee to Delete Contacts From: &quot;, false );</span>
+<span class="nc" id="L84">    Employee employee = null;</span>
+<span class="nc" id="L85">    Contact contact = null;</span>
+<span class="nc" id="L86">    System.out.println ( EmployeeUI.retrieveEmployees() );</span>
+<span class="nc" id="L87">    int employeeId = InputUtility.inputPositiveNumber ( &quot;\n Input ID of Employee to Delete Contacts From: &quot;, false );</span>
     try {
-<span class="nc" id="L87">    employee = EmployeeController.getEmployee ( employeeId );</span>
-<span class="nc" id="L88">    employee.getContacts().stream()</span>
-<span class="nc" id="L89">          .sorted ( ( contact1, contact2 ) -&gt; Long.compare(contact1.getContactId(), contact2.getContactId()))</span>
-<span class="nc" id="L90">          .forEach ( System.out::println );</span>
-<span class="nc" id="L91">        contact = EmployeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( &quot;\n Input ID of Contact to delete: &quot;, false ));</span>
-<span class="nc" id="L92">        System.out.println ( EmployeeController.deleteContact ( employee, contact ) );</span>
-<span class="nc" id="L93">    } catch ( RuntimeException e ) {</span>
-<span class="nc bnc" id="L94" title="All 4 branches missed.">      if ( employee == null &amp;&amp; contact == null ) {</span>
-<span class="nc" id="L95">        System.out.println ( &quot;Employee does not exist!&quot; );</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">      } else if ( contact == null ) {</span>
-<span class="nc" id="L97">        System.out.println ( EmployeeController.message );</span>
+<span class="nc" id="L89">    employee = employeeController.getEmployeeWithContacts ( employeeId );</span>
+<span class="nc" id="L90">    employee.getContacts().stream()</span>
+<span class="nc" id="L91">          .sorted ( ( contact1, contact2 ) -&gt; Long.compare(contact1.getContactId(), contact2.getContactId()))</span>
+<span class="nc" id="L92">          .forEach ( System.out::println );</span>
+<span class="nc" id="L93">        contact = employeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( &quot;\n Input ID of Contact to delete: &quot;, false ));</span>
+<span class="nc" id="L94">        System.out.println ( employeeController.deleteContact ( employee, contact ) );</span>
+<span class="nc" id="L95">    } catch ( RuntimeException e ) {</span>
+<span class="nc bnc" id="L96" title="All 4 branches missed.">      if ( employee == null &amp;&amp; contact == null ) {</span>
+<span class="nc" id="L97">        System.out.println ( &quot;Employee does not exist!&quot; );</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">      } else if ( contact == null ) {</span>
+<span class="nc" id="L99">        e.printStackTrace();</span>
+<span class="nc" id="L100">        System.out.println ( employeeController.message );</span>
       } else {
-<span class="nc" id="L99">        System.out.println ( EmployeeController.message );</span>
+<span class="nc" id="L102">        e.printStackTrace();</span>
+<span class="nc" id="L103">        System.out.println ( employeeController.message );</span>
       }
-<span class="nc" id="L101">    }</span>
-<span class="nc" id="L102">  }</span>
+<span class="nc" id="L105">    }</span>
+<span class="nc" id="L106">  }</span>
 
 
   public static Employee addNewContacts() throws Exception {
-<span class="nc" id="L106">      System.out.println ( EmployeeUI.retrieveEmployees() );</span>
-<span class="nc" id="L107">      Employee employee = null;</span>
-<span class="nc" id="L108">      int employeeId = InputUtility.inputPositiveNumber ( &quot;\n Input ID of Employee to Add Contacts To: &quot;, false );</span>
-<span class="nc" id="L109">      employee = EmployeeController.getEmployee ( employeeId );</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">      if ( employee == null ) {</span>
-<span class="nc" id="L111">        System.out.println ( &quot;Employee does not Exist! &quot; );</span>
-<span class="nc" id="L112">        throw new Exception();</span>
+<span class="nc" id="L110">      System.out.println ( EmployeeUI.retrieveEmployees() );</span>
+<span class="nc" id="L111">      Employee employee = null;</span>
+<span class="nc" id="L112">      int employeeId = InputUtility.inputPositiveNumber ( &quot;\n Input ID of Employee to Add Contacts To: &quot;, false );</span>
+<span class="nc" id="L113">      employee = employeeController.getEmployeeWithContacts ( employeeId );</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">      if ( employee == null ) {</span>
+<span class="nc" id="L115">        System.out.println ( &quot;Employee does not Exist! &quot; );</span>
+<span class="nc" id="L116">        throw new Exception();</span>
       } else {
-<span class="nc" id="L114">        return EmployeeController.addContact ( employee, getInstance().getAllContacts ( false ) );</span>
+<span class="nc" id="L118">        return employeeController.addContact ( employee, getInstance().getAllContacts ( false ) );</span>
       }
   }
 
   public Set&lt;Contact&gt; getAllContacts ( boolean isNewContact ) {
-<span class="nc" id="L119">    Set&lt;Contact&gt; contacts = new HashSet&lt;&gt;();</span>
-		while(true) {
-<span class="nc" id="L121">			System.out.println ( &quot;\n ======== Choose Contact Type ========\n\n &quot; );</span>
-<span class="nc" id="L122">			System.out.println ( &quot; 1. LANDLINE \n &quot;);</span>
-<span class="nc" id="L123">			System.out.println ( &quot; 2. MOBILE \n &quot; );</span>
-<span class="nc" id="L124">			System.out.println ( &quot; 3. EMAIL \n &quot; );</span>
-<span class="nc" id="L125">			System.out.println ( &quot; 4. DONE \n &quot; );</span>
-<span class="nc" id="L126">			String option = InputUtility.inputChoice(&quot;What contact do you want to add?: &quot;);</span>
-<span class="nc bnc" id="L127" title="All 5 branches missed.">			switch(option){</span>
+<span class="nc" id="L123">    Set&lt;Contact&gt; contacts = new HashSet&lt;&gt;();</span>
+		while ( true ) {
+<span class="nc" id="L125">			System.out.println ( &quot;\n ======== Choose Contact Type ========\n\n &quot; );</span>
+<span class="nc" id="L126">			System.out.println ( &quot; 1. LANDLINE \n &quot;);</span>
+<span class="nc" id="L127">			System.out.println ( &quot; 2. MOBILE \n &quot; );</span>
+<span class="nc" id="L128">			System.out.println ( &quot; 3. EMAIL \n &quot; );</span>
+<span class="nc" id="L129">			System.out.println ( &quot; 4. DONE \n &quot; );</span>
+<span class="nc" id="L130">			String option = InputUtility.inputChoice ( &quot;What contact do you want to add?: &quot; );</span>
+<span class="nc bnc" id="L131" title="All 5 branches missed.">			switch ( option ) {</span>
 				case &quot;1&quot;:
-<span class="nc" id="L129">					contacts.add(EmployeeController.createNewContact(&quot;Landline&quot;,InputUtility.inputLandline(&quot;Enter Landline: &quot;)));</span>
-<span class="nc" id="L130">					break;</span>
+<span class="nc" id="L133">					contacts.add ( employeeController.createNewContact ( &quot;Landline&quot;, InputUtility.inputLandline ( &quot;Enter Landline: &quot; ) ) );</span>
+<span class="nc" id="L134">					break;</span>
 				case &quot;2&quot;:
-<span class="nc" id="L132">					contacts.add(EmployeeController.createNewContact(&quot;Mobile&quot;,InputUtility.inputMobile(&quot;Enter Mobile: &quot;)));</span>
-<span class="nc" id="L133">					break;</span>
+<span class="nc" id="L136">					contacts.add ( employeeController.createNewContact ( &quot;Mobile&quot;, InputUtility.inputMobile ( &quot;Enter Mobile: &quot; ) ) );</span>
+<span class="nc" id="L137">					break;</span>
 				case &quot;3&quot;:
-<span class="nc" id="L135">					contacts.add(EmployeeController.createNewContact(&quot;Email&quot;, InputUtility.inputEmail(&quot;Enter Email: &quot;)));</span>
-<span class="nc" id="L136">					break;</span>
+<span class="nc" id="L139">					contacts.add ( employeeController.createNewContact ( &quot;Email&quot;, InputUtility.inputEmail ( &quot;Enter Email: &quot; ) ) );</span>
+<span class="nc" id="L140">					break;</span>
 				case &quot;4&quot;:
-<span class="nc bnc" id="L138" title="All 4 branches missed.">					if ( contacts.size() == 0 &amp;&amp; isNewContact ) {</span>
-<span class="nc" id="L139">						System.out.println ( &quot;\n YOU NEED TO ADD AT LEAST ONE CONTACT! \n&quot; );</span>
-<span class="nc" id="L140">						continue;</span>
+<span class="nc bnc" id="L142" title="All 4 branches missed.">					if ( contacts.size() == 0 &amp;&amp; isNewContact ) {</span>
+<span class="nc" id="L143">						System.out.println ( &quot;\n YOU NEED TO ADD AT LEAST ONE CONTACT! \n&quot; );</span>
+<span class="nc" id="L144">						continue;</span>
 					}
-<span class="nc" id="L142">					return contacts;</span>
+<span class="nc" id="L146">					return contacts;</span>
 				default:
-<span class="nc" id="L144">					System.out.println(&quot;Invalid Option!&quot;);</span>
+<span class="nc" id="L148">					System.out.println ( &quot;Invalid Option!&quot; );</span>
 			}
-<span class="nc" id="L146">		}</span>
+<span class="nc" id="L150">		}</span>
   }
 
   public static ContactUI getInstance() {
-<span class="nc" id="L150">    return new ContactUI();</span>
+<span class="nc" id="L154">    return new ContactUI();</span>
   }
-
-
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

@@ -3,11 +3,14 @@ package com.apm.app;
 import java.util.Set;
 import java.util.HashSet;
 import com.apm.core.Employee;
-import com.apm.core.EmployeeController;
 import com.apm.core.Contact;
+import com.apm.core.EmployeeController;
 import com.apm.utility.InputUtility;
+import org.hibernate.Hibernate;
 
 public class ContactUI {
+
+  public static EmployeeController employeeController = new EmployeeController();
 
   public static void printContactUI() {
     System.out.println ( "\n ======== CONTACT MENU ========\n\n "
@@ -24,7 +27,7 @@ public class ContactUI {
       try {
         switch ( selection ) {
           case "1":
-            System.out.println ( EmployeeController.updateElement ( addNewContacts () ) );
+            System.out.println ( employeeController.updateElement ( addNewContacts () ) );
             break;
           case "2":
             updateEmployeeContact();
@@ -53,11 +56,11 @@ public class ContactUI {
     System.out.println ( EmployeeUI.retrieveEmployees() );
     int employeeId = InputUtility.inputPositiveNumber ( "\nInput ID of Employee to Update: ", false );
     try {
-      employee = EmployeeController.getEmployee ( employeeId );
+      employee = employeeController.getEmployeeWithContacts ( employeeId );
       employee.getContacts().stream()
               .sorted ( ( contact1, contact2 ) -> Long.compare ( contact1.getContactId(), contact2.getContactId() ) )
               .forEach ( System.out::println );
-      contact = EmployeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( "\nInput ID of Contact you want to update: ", false ) );
+      contact = employeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( "\nInput ID of Contact you want to update: ", false ) );
       if ( contact.getContactType().equals ( "Landline" ) ) {
         newContact = InputUtility.inputLandline ( "\nEnter New Landline Number ( XXX-XXXX ): " );
       } else if ( contact.getContactType().equals ( "Mobile" ) ) {
@@ -65,14 +68,14 @@ public class ContactUI {
       } else if ( contact.getContactType().equals ( "Email" ) ) {
         newContact = InputUtility.inputEmail ( "\nEnter New Email: " );
       }
-      System.out.println ( EmployeeController.updateContact ( employee, contact, newContact ) );
+      System.out.println ( employeeController.updateContact ( employee, contact, newContact ) );
     } catch ( Exception e ) {
       if ( employee == null && contact == null ) {
         System.out.println ( "Employee does not exist!" );
       } else if ( contact == null ) {
-        System.out.println ( EmployeeController.message );
+        System.out.println ( employeeController.message );
       } else {
-        System.out.println ( EmployeeController.message );
+        System.out.println ( employeeController.message );
       }
     }
   }
@@ -83,19 +86,21 @@ public class ContactUI {
     System.out.println ( EmployeeUI.retrieveEmployees() );
     int employeeId = InputUtility.inputPositiveNumber ( "\n Input ID of Employee to Delete Contacts From: ", false );
     try {
-    employee = EmployeeController.getEmployee ( employeeId );
+    employee = employeeController.getEmployeeWithContacts ( employeeId );
     employee.getContacts().stream()
           .sorted ( ( contact1, contact2 ) -> Long.compare(contact1.getContactId(), contact2.getContactId()))
           .forEach ( System.out::println );
-        contact = EmployeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( "\n Input ID of Contact to delete: ", false ));
-        System.out.println ( EmployeeController.deleteContact ( employee, contact ) );
+        contact = employeeController.getSpecificContact ( employee.getEmployeeId(), InputUtility.inputPositiveNumber ( "\n Input ID of Contact to delete: ", false ));
+        System.out.println ( employeeController.deleteContact ( employee, contact ) );
     } catch ( RuntimeException e ) {
       if ( employee == null && contact == null ) {
         System.out.println ( "Employee does not exist!" );
       } else if ( contact == null ) {
-        System.out.println ( EmployeeController.message );
+        e.printStackTrace();
+        System.out.println ( employeeController.message );
       } else {
-        System.out.println ( EmployeeController.message );
+        e.printStackTrace();
+        System.out.println ( employeeController.message );
       }
     }
   }
@@ -105,12 +110,12 @@ public class ContactUI {
       System.out.println ( EmployeeUI.retrieveEmployees() );
       Employee employee = null;
       int employeeId = InputUtility.inputPositiveNumber ( "\n Input ID of Employee to Add Contacts To: ", false );
-      employee = EmployeeController.getEmployee ( employeeId );
+      employee = employeeController.getEmployeeWithContacts ( employeeId );
       if ( employee == null ) {
         System.out.println ( "Employee does not Exist! " );
         throw new Exception();
       } else {
-        return EmployeeController.addContact ( employee, getInstance().getAllContacts ( false ) );
+        return employeeController.addContact ( employee, getInstance().getAllContacts ( false ) );
       }
   }
 
@@ -125,13 +130,13 @@ public class ContactUI {
 			String option = InputUtility.inputChoice ( "What contact do you want to add?: " );
 			switch ( option ) {
 				case "1":
-					contacts.add ( EmployeeController.createNewContact ( "Landline", InputUtility.inputLandline ( "Enter Landline: " ) ) );
+					contacts.add ( employeeController.createNewContact ( "Landline", InputUtility.inputLandline ( "Enter Landline: " ) ) );
 					break;
 				case "2":
-					contacts.add ( EmployeeController.createNewContact ( "Mobile", InputUtility.inputMobile ( "Enter Mobile: " ) ) );
+					contacts.add ( employeeController.createNewContact ( "Mobile", InputUtility.inputMobile ( "Enter Mobile: " ) ) );
 					break;
 				case "3":
-					contacts.add ( EmployeeController.createNewContact ( "Email", InputUtility.inputEmail ( "Enter Email: " ) ) );
+					contacts.add ( employeeController.createNewContact ( "Email", InputUtility.inputEmail ( "Enter Email: " ) ) );
 					break;
 				case "4":
 					if ( contacts.size() == 0 && isNewContact ) {
@@ -148,7 +153,4 @@ public class ContactUI {
   public static ContactUI getInstance() {
     return new ContactUI();
   }
-
-
-
 }
